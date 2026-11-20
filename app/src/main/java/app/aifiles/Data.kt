@@ -72,26 +72,25 @@ class Repo(private val ctx: Context) {
     }
 
     private fun read(uri: Uri, video: Boolean, out: MutableList<Media>) {
-        val m = MediaStore.MediaColumns
         val proj = arrayOf(
-            m._ID,
-            m.DATA,
-            m.DISPLAY_NAME,
-            m.DATE_MODIFIED,
-            m.DATE_TAKEN,
-            m.BUCKET_DISPLAY_NAME,
-            m.SIZE,
-            m.DURATION,
+            "_id",
+            "_data",
+            "_display_name",
+            "date_modified",
+            if (video) "datetaken" else "datetaken",
+            "bucket_display_name",
+            "_size",
+            if (video) "duration" else "duration",
         )
-        cr.query(uri, proj, null, null, "${m.DATE_MODIFIED} DESC")?.use { c ->
-            val idCol = c.getColumnIndexOrThrow(m._ID)
-            val dataCol = c.getColumnIndexOrThrow(m.DATA)
-            val nameCol = c.getColumnIndex(m.DISPLAY_NAME)
-            val modCol = c.getColumnIndex(m.DATE_MODIFIED)
-            val takenCol = c.getColumnIndex(m.DATE_TAKEN)
-            val bucketCol = c.getColumnIndex(m.BUCKET_DISPLAY_NAME)
-            val sizeCol = c.getColumnIndex(m.SIZE)
-            val durCol = c.getColumnIndex(m.DURATION)
+        cr.query(uri, proj, null, null, "date_modified DESC")?.use { c ->
+            val idCol = c.getColumnIndexOrThrow("_id")
+            val dataCol = c.getColumnIndexOrThrow("_data")
+            val nameCol = c.getColumnIndex("_display_name")
+            val modCol = c.getColumnIndex("date_modified")
+            val takenCol = c.getColumnIndex("datetaken")
+            val bucketCol = c.getColumnIndex("bucket_display_name")
+            val sizeCol = c.getColumnIndex("_size")
+            val durCol = c.getColumnIndex("duration")
             while (c.moveToNext()) {
                 val path = c.getString(dataCol) ?: continue
                 val file = File(path)
@@ -114,9 +113,8 @@ class Repo(private val ctx: Context) {
 
     private fun files(sel: String?, args: Array<String>?, order: String, limit: Int): List<File> {
         val out = ArrayList<File>()
-        val f = MediaStore.Files.FileColumns
-        cr.query(MediaStore.Files.getContentUri("external"), arrayOf(f.DATA), sel, args, order)?.use { c ->
-            val dataCol = c.getColumnIndex(f.DATA)
+        cr.query(MediaStore.Files.getContentUri("external"), arrayOf("_data"), sel, args, order)?.use { c ->
+            val dataCol = c.getColumnIndex("_data")
             if (dataCol < 0) return emptyList()
             while (c.moveToNext() && out.size < limit) {
                 val path = c.getString(dataCol) ?: continue
@@ -127,16 +125,15 @@ class Repo(private val ctx: Context) {
         return out
     }
 
-    fun recent(): List<File> = files("${MediaStore.Files.FileColumns.SIZE}>0 AND ${MediaStore.Files.FileColumns.DATA} NOT LIKE '%/Android/%' AND ${MediaStore.Files.FileColumns.DATA} NOT LIKE '%/.%'",
-        null, "${MediaStore.Files.FileColumns.DATE_MODIFIED} DESC", 40)
+    fun recent(): List<File> = files("_size>0 AND _data NOT LIKE '%/Android/%' AND _data NOT LIKE '%/.[...]'")
 
     fun byExt(exts: List<String>, limit: Int = 1000): List<File> {
-        val sel = exts.joinToString(" OR ") { "${MediaStore.Files.FileColumns.DATA} LIKE ?" }
-        return files(sel, exts.map { "%.$it" }.toTypedArray(), "${MediaStore.Files.FileColumns.DATE_MODIFIED} DESC", limit)
+        val sel = exts.joinToString(" OR ") { "_data LIKE ?" }
+        return files(sel, exts.map { "%.$it" }.toTypedArray(), "date_modified DESC", limit)
     }
 
     fun large(minBytes: Long = 100L * 1024 * 1024): List<File> =
-        files("${MediaStore.Files.FileColumns.SIZE}>?", arrayOf(minBytes.toString()), "${MediaStore.Files.FileColumns.SIZE} DESC", 200)
+        files("_size>?", arrayOf(minBytes.toString()), "_size DESC", 200)
 
     fun category(name: String): List<File> = when (name) {
         "Large files" -> large()
@@ -179,6 +176,7 @@ class Repo(private val ctx: Context) {
             src.copyRecursively(destination, overwrite = false)
         } else {
             src.copyTo(destination, overwrite = false)
+            true
         }
         if (!ok) throw IOException("Could not copy ${src.name}")
         scan(destination)
@@ -195,6 +193,7 @@ class Repo(private val ctx: Context) {
                 src.copyRecursively(destination, overwrite = false)
             } else {
                 src.copyTo(destination, overwrite = false)
+                true
             }
             if (!copied) throw IOException("Could not move ${src.name}")
             if (!src.deleteRecursively()) throw IOException("Could not remove source ${src.name}")

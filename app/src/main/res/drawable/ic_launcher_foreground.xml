@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Rear folder and paper layers -->
+    <path
+        android:fillColor="#EDAA00"
+        android:pathData="M9,31 C9,26.6 12.6,23 17,23 L42,23 C45,23 47,24 49.5,26.5 L57,34 C59,36 60.5,37 64,37 L91,37 C95.4,37 99,40.6 99,45 L99,75 C99,79.4 95.4,83 91,83 L17,83 C12.6,83 9,79.4 9,75 Z" />
+    <path
+        android:fillColor="#E6E6E6"
+        android:pathData="M16,47 C16,44.8 17.8,43 20,43 L89,43 C91.2,43 93,44.8 93,47 L93,76 L16,76 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M18,49 C18,46.8 19.8,45 22,45 L87,45 C89.2,45 91,46.8 91,49 L91,76 L18,76 Z" />
+    <!-- Front of the folder -->
+    <path
+        android:fillColor="#FFCC00"
+        android:pathData="M21,48 L61,48 C63,48 64.5,47.5 66.5,46 L77,39 C79,37.7 80.5,37 83,37 L94,37 C98.2,37 101,41 99.8,45 L89,79 C88,82 85.5,84 82.5,84 L17,84 C12.8,84 10,80.4 11.2,76.5 L18,53 C18.5,50 19.5,48 21,48 Z" />
+</vector>

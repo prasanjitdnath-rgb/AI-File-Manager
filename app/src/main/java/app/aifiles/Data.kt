@@ -125,7 +125,12 @@ class Repo(private val ctx: Context) {
         return out
     }
 
-    fun recent(): List<File> = files("_size>0 AND _data NOT LIKE '%/Android/%' AND _data NOT LIKE '%/.[...]'")
+    fun recent(): List<File> = files(
+        "_size>0 AND _data NOT LIKE '%/Android/%' AND _data NOT LIKE '%/.%'",
+        null,
+        "date_modified DESC",
+        1000,
+    )
 
     fun byExt(exts: List<String>, limit: Int = 1000): List<File> {
         val sel = exts.joinToString(" OR ") { "_data LIKE ?" }

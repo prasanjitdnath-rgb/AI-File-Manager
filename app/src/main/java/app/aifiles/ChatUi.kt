@@ -35,7 +35,6 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExposedDropdownMenu
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -52,7 +51,6 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.menuAnchor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -544,7 +542,7 @@ fun AiSettingsScreen(vm: VM, onClose: () -> Unit) {
                             .menuAnchor()
                             .fillMaxWidth(),
                     )
-                    ExposedDropdownMenu(
+                    androidx.compose.material3.ExposedDropdownMenu(
                         expanded = providerExpanded,
                         onDismissRequest = { providerExpanded = false },
                     ) {
@@ -573,6 +571,7 @@ fun AiSettingsScreen(vm: VM, onClose: () -> Unit) {
                             Icon(
                                 if (revealKey) Icons.Default.VisibilityOff else Icons.Default.Visibility,
                                 contentDescription = if (revealKey) "Hide key" else "Show key",
+                                
                             )
                         }
                     },
